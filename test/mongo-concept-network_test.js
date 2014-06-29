@@ -1,4 +1,5 @@
- /*global describe:true, it:true, before:true */
+/* jshint node:true */
+/*global describe:true, it:true, before:true */
 "use strict";
 
 // # Tests for mongo-concept-network module
@@ -25,14 +26,16 @@ describe('ConceptNetwork', function () {
   describe('#addNode', function () {
 
     before(function () {
-      cn = new ConceptNetwork();
+      cn = new ConceptNetwork("test");
     });
 
-    it('should return an object', function () {
-      var node = cn.addNode("Chuck Norris");
-      assert.equal(node.id, 1);
-      assert.equal(node.label, "Chuck Norris");
-      assert.equal(node.occ, 1);
+    it('should return an object', function (done) {
+      cn.addNode("Chuck Norris", function(node) {
+        assert.equal(node._id.length > 0, true);
+        assert.equal(node.label, "Chuck Norris");
+        assert.equal(node.occ, 1);
+        done();
+      });
     });
 
     it('should increment occ', function () {

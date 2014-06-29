@@ -1,3 +1,4 @@
+/* jshint node:true */
 /*global describe:true, it:true, before:true, beforeEach:true */
 "use strict";
 
@@ -12,7 +13,7 @@ var ConceptNetworkState = require('../lib/mongo-concept-network-state')
                           .ConceptNetworkState;
 
 // ## ConceptNetwork
-describe('ConceptNetworkState', function () {
+describe.skip('ConceptNetworkState', function () {
   // ### Constructor
   describe('#Constructor', function () {
 
