@@ -232,48 +232,82 @@ describe('ConceptNetwork', function () {
           done(err);
         });
       });
-      
     });
   });
 
-  describe.skip('#getters', function () {
+  describe('#getters', function () {
 
-    before(function () {
-      cn = new ConceptNetwork("test");
+    var node1id, node2id, node3id, link12, link13, link23;
+    
+    before(function (done) {
+      db.conceptnetwork.remove()
+      .then(function() {
+        cn = new ConceptNetwork("test");
+        cn.addNode("Node 1", function (node1) {
+          node1id = node1._id;
+          cn.addNode("Node 2", function (node2) {
+            node2id = node2._id;
+            cn.addNode("Node 3", function (node3) {
+              node3id = node3._id;
+              cn.addLink(node1id, node2id, function (link) {
+                link12 = link;
+                cn.addLink(node1id, node3id, function (link) {
+                  link13 = link;
+                  cn.addLink(node2id, node3id, function (link) {
+                    link23 = link;
+                    done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+
+      /*cn = new ConceptNetwork("test");
       cn.addNode("Node 1");
       cn.addNode("Node 2");
       cn.addNode("Node 3");
       cn.addLink(1, 2);
       cn.addLink(1, 3);
-      cn.addLink(2, 3);
+      cn.addLink(2, 3);*/
     });
 
     describe('#getNode', function () {
 
-      it('should get the second node', function () {
-        var node = cn.getNode('Node 2');
-        assert.equal(node.id, 2);
+      it('should get the second node', function (done) {
+        cn.getNode('Node 2', function (node) {
+          assert.equal(node._id.toString(), node2id.toString());
+          done();
+        });
       });
 
-      it('should return null when the node does not exist', function () {
-        var node = cn.getNode('Nonexistent');
-        assert.equal(node, null);
+      it('should return null when the node does not exist', function (done) {
+        cn.getNode('Nonexistent', function (node) {
+          assert.equal(node, null);
+          done();
+        });
+        
       });
 
     });
 
     describe('#getLink', function () {
 
-      it('should get the link', function () {
-        var link = cn.getLink('1_2');
-        assert.equal(link.fromId, 1);
-        assert.equal(link.toId, 2);
-        assert.equal(link.coOcc, 1);
+      it('should get the link', function (done) {
+        cn.getLink(node1id, node2id, function (link) {
+          assert.equal(link.fromId.toString(), node1id.toString());
+          assert.equal(link.toId.toString(), node2id.toString());
+          assert.equal(link.coOcc, 1);
+          done();
+        });
       });
 
-      it('should return null when the node does not exist', function () {
-        var link = cn.getLink('1_100');
-        assert.equal(link, null);
+      it('should return null when the node does not exist', function (done) {
+        cn.getLink(node1id, link12._id, function (link) {
+          assert.equal(link, null);
+          done();
+        });
       });
 
     });
