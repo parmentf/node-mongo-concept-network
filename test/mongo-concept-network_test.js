@@ -11,6 +11,8 @@ var pmongo = require('promised-mongo');
 // Module to test
 var ConceptNetwork = require('../lib/mongo-concept-network').ConceptNetwork;
 
+var db = pmongo("test",["conceptnetwork"]);
+
 // ## ConceptNetwork
 describe('ConceptNetwork', function () {
   // ### Constructor
@@ -23,12 +25,10 @@ describe('ConceptNetwork', function () {
   });
 
   var cn;
-  var db;
   // ### addNode
   describe('#addNode', function () {
 
     before(function (done) {
-      db = pmongo("test",["conceptnetwork"]);
       db.conceptnetwork.remove()
       .then(function() {
         cn = new ConceptNetwork("test");
@@ -159,26 +159,42 @@ describe('ConceptNetwork', function () {
 
   });
 
-  describe.skip("#decrementLink", function () {
+  describe("#decrementLink", function () {
 
-    before(function () {
-      cn = new ConceptNetwork("test");
-      cn.addNode("Node 1");
-      cn.addNode("Node 2");
-      cn.addLink(1, 2);
-      cn.addLink(1, 2);
+    var node1id, node2id, link12;
+    
+    before(function (done) {
+      db.conceptnetwork.remove()
+      .then(function() {
+        cn = new ConceptNetwork("test");
+        cn.addNode("Node 1", function (node1) {
+          node1id = node1._id;
+          cn.addNode("Node 2", function (node2) {
+            node2id = node2._id;
+            cn.addLink(node1id, node2id, function (link) {
+              cn.addLink(node1id, node2id, function (link) {
+                link12 = link;
+                done();
+              });
+            });
+          });
+        });
+      });
     });
 
-    it('should decrement a coOcc value of 2', function () {
-      assert.equal(cn.link['1_2'].coOcc, 2);
-      cn.decrementLink('1_2');
-      assert.equal(cn.link['1_2'].coOcc, 1);
+    it('should decrement a coOcc value of 2', function (done) {
+      assert.equal(link12.coOcc, 2);
+      cn.decrementLink(node1id, node2id, function (link) {
+        assert.equal(link.coOcc, 1);
+        done();
+      });
     });
 
-    it('should remove a link with a coOcc value of 0', function () {
-      assert.equal(cn.link['1_2'].coOcc, 1);
-      cn.decrementLink('1_2');
-      assert.equal(typeof cn.link['1_2'], "undefined");
+    it('should remove a link with a coOcc value of 0', function (done) {
+      cn.decrementLink(node1id, node2id, function (link) {
+        assert.equal(link, null);
+        done();
+      });
     });
 
   });
