@@ -1,0 +1,24 @@
+{
+  "name": "mongo-concept-network",
+  "version": "0.1.0",
+  "description": "Concept Network is weighted directed graph, in which activation values are propagated. This version uses MongoDb.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:parmentf/node-mongo-concept-network.git"
+  },
+  "keywords": [
+    "graph",
+    "weighter",
+    "propagation",
+    "persistent"
+  ],
+  "author": "François Parmentier",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/parmentf/node-mongo-concept-network/issues"
+  }
+}
