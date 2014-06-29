@@ -4,6 +4,7 @@
   "description": "Concept Network is weighted directed graph, in which activation values are propagated. This version uses MongoDb.",
   "main": "index.js",
   "scripts": {
+    "jshint": "jshint */*.js index.js",
     "test": "mocha --reporter spec"
   },
   "repository": {
@@ -26,6 +27,7 @@
   },
   "dependencies": {
     "sugar": "~1.4.1",
-    "debug": "~1.0.2"
+    "debug": "~1.0.2",
+    "promised-mongo": "~0.11.1"
   }
 }
