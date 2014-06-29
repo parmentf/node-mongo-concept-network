@@ -106,36 +106,55 @@ describe('ConceptNetwork', function () {
 
   });
 
-  describe.skip("#addLink", function () {
+  describe("#addLink", function () {
 
-    before(function () {
-      cn = new ConceptNetwork();
-      cn.addNode("Node 1");
-      cn.addNode("Node 2");
-      cn.addNode("Node 3");
+    var node1id, node2id, node3id;
+    
+    before(function (done) {
+      cn = new ConceptNetwork("test");
+      cn.addNode("Node 1", function (node1) {
+        node1id = node1._id;
+        cn.addNode("Node 2", function (node2) {
+          node2id = node2._id;
+          cn.addNode("Node 3", function (node3){
+            node3id = node3._id;
+            done();
+          });
+        });
+      });
     });
 
-    it('should return an object', function () {
-      var link = cn.addLink(1, 2);
-      assert.equal(typeof link, "object");
-      assert.equal(link.coOcc, 1);
+    it('should return an object', function (done) {
+      cn.addLink(node1id, node2id, function (link) {
+        assert.equal(link.coOcc, 1);
+        done();
+      });
     });
 
-    it('should increment coOcc', function () {
-      var link = cn.addLink(1, 2);
-      assert.equal(link.coOcc, 2);
+    it('should increment coOcc', function (done) {
+      cn.addLink(node1id, node2id, function (link) {
+        assert.equal(link.coOcc, 2);
+        done();
+      });
     });
 
-    it('should create a good fromIndex', function () {
-      cn.addLink(1, 3);
-      assert.deepEqual(cn.fromIndex[1], [ '1_2', '1_3']);
+    it('should create a good fromIndex', function (done) {
+      cn.addLink(node1id, node3id, function (link) {
+        assert.equal(link.fromId.toString(), node1id.toString());
+        assert.equal(link.toId.toString(), node3id.toString());
+        done();
+      });
+      
     });
 
-    it('should not accept non number ids', function () {
-      var link = cn.addLink(1, "berf");
-      assert.equal(link instanceof Error, true);
-      link = cn.addLink("barf", 2);
-      assert.equal(link instanceof Error, true);
+    it('should not accept non number ids', function (done) {
+      cn.addLink(node1id, "berf", function(link) {
+        assert.equal(link instanceof Error, true);
+        cn.addLink("barf", node2id, function (link) {
+          assert.equal(link instanceof Error, true);
+          done();
+        });
+      });
     });
 
   });
@@ -143,7 +162,7 @@ describe('ConceptNetwork', function () {
   describe.skip("#decrementLink", function () {
 
     before(function () {
-      cn = new ConceptNetwork();
+      cn = new ConceptNetwork("test");
       cn.addNode("Node 1");
       cn.addNode("Node 2");
       cn.addLink(1, 2);
@@ -167,7 +186,7 @@ describe('ConceptNetwork', function () {
   describe.skip("#removeLink", function () {
 
     before(function () {
-      cn = new ConceptNetwork();
+      cn = new ConceptNetwork("test");
       cn.addNode("Node 1");
       cn.addNode("Node 2");
       cn.addLink(1, 2);
@@ -183,7 +202,7 @@ describe('ConceptNetwork', function () {
   describe.skip('#getters', function () {
 
     before(function () {
-      cn = new ConceptNetwork();
+      cn = new ConceptNetwork("test");
       cn.addNode("Node 1");
       cn.addNode("Node 2");
       cn.addNode("Node 3");
