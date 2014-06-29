@@ -80,19 +80,28 @@ describe('ConceptNetwork', function () {
       });
     });
 
-    it('should remove a node with an occ of 1', function () {
-      var node = cn.decrementNode("World");
-      assert.equal(node, null);
+    it('should remove a node with an occ of 1', function (done) {
+      var node = cn.decrementNode("World", function (node) {
+        assert.equal(node, null);
+        done();
+      });
     });
   });
 
   // ### removeNode
-  describe.skip('#removeNode', function () {
+  describe('#removeNode', function () {
 
-    it('should remove even a node with occ value of 2', function () {
-      assert.equal(cn.node[1].occ, 2);
-      cn.removeNode(1);
-      assert.equal(typeof cn.node[1], "undefined");
+    it('should remove even a node with occ value of 2', function (done) {
+      db.conceptnetwork.findOne({ label: "Chuck Norris"})
+      .then(function(node) {
+        assert.equal(node.occ, 2);
+        cn.removeNode(node._id, function (err1) {
+          db.conceptnetwork.findOne({ label: "Chuck Norris"})
+          .then(function(err2) {
+            done(err2);
+          });
+        });
+      });
     });
 
   });
