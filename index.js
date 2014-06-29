@@ -1,2 +1,2 @@
-module.exports.ConceptNetwork = require('./lib/concept-network').ConceptNetwork;
-module.exports.ConceptNetworkState = require('./lib/concept-network-state').ConceptNetworkState;
+module.exports.ConceptNetwork = require('./lib/mongo-concept-network').ConceptNetwork;
+module.exports.ConceptNetworkState = require('./lib/mongo-concept-network-state').ConceptNetworkState;
