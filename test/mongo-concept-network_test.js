@@ -314,24 +314,30 @@ describe('ConceptNetwork', function () {
 
     describe('#getNodeFromLinks', function () {
 
-      it('should get all links from node 2', function () {
-        var fromLinks = cn.getNodeFromLinks(2);
-        assert.deepEqual(fromLinks, ['2_3']);
+      it('should get all links from node 2', function (done) {
+        cn.getNodeFromLinks(node2id, function (fromLinks) {
+          assert.deepEqual(fromLinks, [link23]);
+          done();
+        });
       });
 
-      it('should get all links from node 1', function () {
-        var fromLinks = cn.getNodeFromLinks(1);
-        assert.deepEqual(fromLinks, ['1_2', '1_3']);
+      it('should get all links from node 1', function (done) {
+        cn.getNodeFromLinks(node1id, function (fromLinks) {
+          assert.deepEqual(fromLinks, [link12, link13]);
+          done();
+        });
       });
 
-      it('should get no links from node 3', function () {
-        var fromLinks = cn.getNodeFromLinks(3);
-        assert.deepEqual(fromLinks, []);
+      it('should get no links from node 3', function (done) {
+        cn.getNodeFromLinks(node3id, function (fromLinks) {
+          assert.deepEqual(fromLinks, []);
+          done();
+        });
       });
 
     });
 
-    describe('#getNodeToLinks', function () {
+    describe.skip('#getNodeToLinks', function () {
 
       it('should get all links to node 2', function () {
         var toLinks = cn.getNodeToLinks(2);
