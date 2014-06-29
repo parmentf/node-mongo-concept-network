@@ -23,11 +23,12 @@ describe('ConceptNetwork', function () {
   });
 
   var cn;
+  var db;
   // ### addNode
   describe('#addNode', function () {
 
     before(function (done) {
-      var db = pmongo("test",["conceptnetwork"]);
+      db = pmongo("test",["conceptnetwork"]);
       db.conceptnetwork.remove()
       .then(function() {
         cn = new ConceptNetwork("test");
@@ -35,7 +36,7 @@ describe('ConceptNetwork', function () {
       });
     });
 
-    it.only('should return an object', function (done) {
+    it('should return an object', function (done) {
       cn.addNode("Chuck Norris", function(node) {
         assert.equal(node.hasOwnProperty("_id"), true);
         assert.equal(node.label, "Chuck Norris");
@@ -44,22 +45,28 @@ describe('ConceptNetwork', function () {
       });
     });
 
-    it('should increment occ', function () {
-      var node = cn.addNode("Chuck Norris");
-      assert.equal(node.id, 1);
-      assert.equal(node.occ, 2);
+    it('should increment occ', function (done) {
+      var node = cn.addNode("Chuck Norris", function(node) {
+        assert.equal(node.occ, 2);
+        done();
+      });
     });
 
-    it('should increment nodeLastId', function () {
-      var node = cn.addNode("World");
-      assert.equal(node.id, 2);
-      assert.equal(Object.getOwnPropertyNames(cn.node).length, 2);
+    it('should have two nodes', function (done) {
+      var node = cn.addNode("World", function (node) {
+        db.conceptnetwork.count()
+          .then(function (res) {
+          assert.equal(res, 2);
+          done();
+        });
+      });
     });
 
-    it('should increment a previous node too', function () {
-      var node = cn.addNode("Chuck Norris");
-      assert.equal(node.id, 1);
-      assert.equal(node.occ, 3);
+    it('should increment a previous node too', function (done) {
+      var node = cn.addNode("Chuck Norris", function (node) {
+        assert.equal(node.occ, 3);
+        done();
+      });
     });
   });
 

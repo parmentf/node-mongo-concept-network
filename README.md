@@ -42,6 +42,12 @@ To lint:
 $ npm run jshint
 ```
 
+To test:
+
+```bash
+$ npm test
+```
+
 ## Release History
 
 2014/?/?: version 0.1.0: First version.
