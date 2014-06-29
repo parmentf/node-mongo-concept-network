@@ -1,4 +1,4 @@
-# mongo-concept-network [![Build Status](https://secure.travis-ci.org/parmentf/node-mongo-concept-network.png)](http://travis-ci.org/parmentf/node-mongo-concept-network) [![NPM version](https://badge.fury.io/js/concept-network.png)](http://badge.fury.io/js/concept-network)
+# mongo-concept-network [![Build Status](https://secure.travis-ci.org/parmentf/node-mongo-concept-network.png)](http://travis-ci.org/parmentf/node-mongo-concept-network) [![NPM version](https://badge.fury.io/js/mongo-concept-network.png)](http://badge.fury.io/js/mongo-concept-network)
 
 Mongo Concept Network is weighted directed graph, in which activation values are propagated. Written in [Node.js](http://nodejs.org) and MongoDb.
 
@@ -20,6 +20,9 @@ cns.propagate();
 ```
 
 ## Documentation
+
+This version of Concept Network, on the contrary to the original [concept-network](https://github.com/parmentf/node-concept-network), uses directly MongoDb.
+
 _(Coming soon)_
 
 ## Examples
