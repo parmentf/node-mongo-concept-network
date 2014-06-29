@@ -33,7 +33,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 
-2014/06/29: version 0.1.0: First version.
+2014/?/?: version 0.1.0: First version.
 
 Warning: this is a work in progress.
 
