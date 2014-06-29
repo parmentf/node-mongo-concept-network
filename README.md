@@ -3,6 +3,9 @@
 Mongo Concept Network is weighted directed graph, in which activation values are propagated. Written in [Node.js](http://nodejs.org) and MongoDb.
 
 ## Getting Started
+
+You must ensure that `mongodb` is installed and running (tested with version 2.2.4).
+
 Install the module with: `npm install mongo-concept-network`
 
 ```javascript
@@ -22,6 +25,8 @@ cns.propagate();
 ## Documentation
 
 This version of Concept Network, on the contrary to the original [concept-network](https://github.com/parmentf/node-concept-network), uses directly MongoDb.
+As MongoDb is asynchronous, I can't keep the API of [concept-network](https://github.com/parmentf/node-concept-network).
+Much refactoring foreseen.
 
 _(Coming soon)_
 
@@ -30,6 +35,12 @@ _(Coming soon)_
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint, and test your code using [mocha](http://visionmedia.github.com/mocha/).
+
+To lint:
+
+```bash
+$ npm run jshint
+```
 
 ## Release History
 

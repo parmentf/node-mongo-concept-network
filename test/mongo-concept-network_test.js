@@ -6,6 +6,7 @@
 
 // ## Required libraries
 var assert = require('assert');
+var pmongo = require('promised-mongo');
 
 // Module to test
 var ConceptNetwork = require('../lib/mongo-concept-network').ConceptNetwork;
@@ -25,13 +26,18 @@ describe('ConceptNetwork', function () {
   // ### addNode
   describe('#addNode', function () {
 
-    before(function () {
-      cn = new ConceptNetwork("test");
+    before(function (done) {
+      var db = pmongo("test",["conceptnetwork"]);
+      db.conceptnetwork.remove()
+      .then(function() {
+        cn = new ConceptNetwork("test");
+        done();
+      });
     });
 
-    it('should return an object', function (done) {
+    it.only('should return an object', function (done) {
       cn.addNode("Chuck Norris", function(node) {
-        assert.equal(node._id.length > 0, true);
+        assert.equal(node.hasOwnProperty("_id"), true);
         assert.equal(node.label, "Chuck Norris");
         assert.equal(node.occ, 1);
         done();
