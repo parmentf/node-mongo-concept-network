@@ -199,19 +199,40 @@ describe('ConceptNetwork', function () {
 
   });
 
-  describe.skip("#removeLink", function () {
-
-    before(function () {
-      cn = new ConceptNetwork("test");
-      cn.addNode("Node 1");
-      cn.addNode("Node 2");
-      cn.addLink(1, 2);
+  describe("#removeLink", function () {
+    
+    var node1id, node2id, link12;
+    
+    before(function (done) {
+      db.conceptnetwork.remove()
+      .then(function() {
+        cn = new ConceptNetwork("test");
+        cn.addNode("Node 1", function (node1) {
+          node1id = node1._id;
+          cn.addNode("Node 2", function (node2) {
+            node2id = node2._id;
+            cn.addLink(node1id, node2id, function (link) {
+              link12 = link;
+              done();
+            });
+          });
+        });
+      });
     });
 
-    it('should remove the link', function () {
-      assert.deepEqual(cn.link['1_2'], { fromId: 1, toId: 2, coOcc: 1 });
-      cn.removeLink('1_2');
-      assert.equal(typeof cn.link['1_2'], "undefined");
+    it('should remove the link', function (done) {
+      assert.equal(link12.fromId.toString(), node1id.toString());
+      assert.equal(link12.toId.toString(), node2id.toString());
+      assert.equal(link12.coOcc, 1);
+      /*assert.deepEqual(cn.link['1_2'], { fromId: 1, toId: 2, coOcc: 1 });*/
+      cn.removeLink(link12._id, function (err) {
+        db.conceptnetwork.findOne({ fromId: node1id, toId: node2id })
+        .then(function (res) {
+          assert.equal(res, null);
+          done(err);
+        });
+      });
+      
     });
   });
 
