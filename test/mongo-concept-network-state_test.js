@@ -203,27 +203,43 @@ describe('ConceptNetworkState', function () {
 
   });
 
-  describe.skip('#setters', function () {
+  describe('#setters', function () {
 
     var cn, cns, node1, node2;
 
     describe('##setActivationValue', function () {
 
-      before(function () {
+      before(function (done) {
         cn = new ConceptNetwork("test");
         cns = new ConceptNetworkState(cn);
-        node1 = cn.addNode("Node 1");
-        node2 = cn.addNode("Node 2");
+        cn.db.conceptnetwork.remove()
+        .then(function () {
+          cn.addNode("Node 1", function (node) {
+            node1 = node;
+            cn.addNode("Node 2", function (node) {
+              node2 = node;
+              done();
+            });
+          });
+        });
       });
 
-      it('should set a zero activation value', function () {
-        cns.setActivationValue(node2.id, 0);
-        assert.deepEqual(cns.getActivationValue(node2.id), 0);
+      it('should set a zero activation value', function (done) {
+        cns.setActivationValue(node2._id, 0, function () {
+          cns.getActivationValue(node2._id, function (activationValue) {
+            assert.deepEqual(activationValue, 0);
+            done();
+          });
+        });
       });
 
-      it('should set a 75 activation value', function () {
-        cns.setActivationValue(node1.id, 75);
-        assert.deepEqual(cns.getActivationValue(node1.id), 75);
+      it('should set a 75 activation value', function (done) {
+        cns.setActivationValue(node1._id, 75, function () {
+          cns.getActivationValue(node1._id, function (activationValue) {
+            assert.deepEqual(activationValue, 75);
+            done();
+          });
+        });
       });
 
     });
