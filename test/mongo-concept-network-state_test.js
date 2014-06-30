@@ -216,16 +216,6 @@ describe('ConceptNetworkState', function () {
 
     });
 
-
-
-      /*(self, cn, typeNames, threshold=90):
-        """Get the activated nodes of cn.
-
-        The returned nodes must be in the list of typeNames, and
-        have an activation value greater than threshold
-
-        Return a list of tuples (node,activation value)"""')*/
-
   });
 
   describe('#setters', function () {
