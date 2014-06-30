@@ -137,7 +137,7 @@ describe('ConceptNetworkState', function () {
         });
       });
 
-      it.only('should get the maximum activation value for any token', function (done) {
+      it('should get the maximum activation value for any token', function (done) {
         cns.setActivationValue(node1._id, 75, function () {
           cns.setActivationValue(node2._id, 70, function () {
             cns.setActivationValue(node3._id, 50, function () {
@@ -150,7 +150,7 @@ describe('ConceptNetworkState', function () {
         });
       });
 
-      it('should get the maximum activation value for t tokens', function (done) {
+      it('should get the maximum activation value for s tokens', function (done) {
         cns.setActivationValue(node1._id, 75, function () {
           cns.setActivationValue(node2._id, 70, function () {
             cns.setActivationValue(node3._id, 50, function () {
