@@ -13,7 +13,7 @@ var ConceptNetworkState = require('../lib/mongo-concept-network-state')
                           .ConceptNetworkState;
 
 // ## ConceptNetwork
-describe.skip('ConceptNetworkState', function () {
+describe('ConceptNetworkState', function () {
   // ### Constructor
   describe('#Constructor', function () {
 
@@ -26,7 +26,7 @@ describe.skip('ConceptNetworkState', function () {
 
     it('should not throw an exception', function () {
       assert.doesNotThrow(function () {
-        var cn = new ConceptNetwork();
+        var cn = new ConceptNetwork("test");
         var cns = new ConceptNetworkState(cn);
       }, null, "unexpected error");
     });
@@ -36,15 +36,20 @@ describe.skip('ConceptNetworkState', function () {
   describe('#activate', function () {
 
     var cn, cns, node1;
-    before(function () {
-      cn = new ConceptNetwork();
+    before(function (done) {
+      cn = new ConceptNetwork("test");
       cns = new ConceptNetworkState(cn);
-      node1 = cn.addNode("Node 1");
+      cn.addNode("Node 1", function (node) {
+        node1 = node;
+        done();
+      });
     });
 
-    it('should put the node activation to 100', function () {
-      cns.activate(node1.id);
-      assert.equal(cns.nodeState[node1.id].activationValue, 100);
+    it('should put the node activation to 100', function (done) {
+      cns.activate(node1._id, function (nodeState) {
+        assert.equal(nodeState.activationValue, 100);
+        done();
+      });
     });
 
   });
@@ -55,27 +60,40 @@ describe.skip('ConceptNetworkState', function () {
 
     describe('##getActivationValue', function () {
 
-      before(function () {
-        cn = new ConceptNetwork();
+      before(function (done) {
+        cn = new ConceptNetwork("test");
         cns = new ConceptNetworkState(cn);
-        node1 = cn.addNode("Node 1");
-        node2 = cn.addNode("Node 2");
-        cns.activate(node1.id);
+        cn.addNode("Node 1", function (node) {
+          node1 = node;
+          cn.addNode("Node 2", function (node) {
+            node2 = node;
+            cns.activate(node1._id, function (nodeState) {
+              done();
+            });
+          });
+        });
+        
       });
 
-      it('should get a zero activation value', function () {
-        assert.deepEqual(cns.getActivationValue(node2.id), 0);
+      it('should get a zero activation value', function (done) {
+        cns.getActivationValue(node2._id, function (activationValue) {
+          assert.equal(activationValue, 0);
+          done();
+        });
       });
 
-      it('should get a 100 activation value', function () {
-        assert.deepEqual(cns.getActivationValue(node1.id), 100);
+      it('should get a 100 activation value', function (done) {
+        cns.getActivationValue(node1._id, function (activationValue) {
+          assert.equal(activationValue, 100);
+          done();
+        });
       });
     });
 
-    describe('##getOldActivationValue', function () {
+    describe.skip('##getOldActivationValue', function () {
 
       before(function () {
-        cn = new ConceptNetwork();
+        cn = new ConceptNetwork("test");
         cns = new ConceptNetworkState(cn);
         node1 = cn.addNode("Node 1");
         node2 = cn.addNode("Node 2");
@@ -92,10 +110,10 @@ describe.skip('ConceptNetworkState', function () {
       });
     });
 
-    describe('##getMaximumActivationValue', function () {
+    describe.skip('##getMaximumActivationValue', function () {
 
       before(function () {
-        cn = new ConceptNetwork();
+        cn = new ConceptNetwork("test");
         cns = new ConceptNetworkState(cn);
         node1 = cn.addNode("Node 1");
         node2 = cn.addNode("sNode 2");
@@ -121,10 +139,10 @@ describe.skip('ConceptNetworkState', function () {
       });
     });
 
-    describe('##getActivatedTypedNodes', function () {
+    describe.skip('##getActivatedTypedNodes', function () {
 
       before(function () {
-        cn = new ConceptNetwork();
+        cn = new ConceptNetwork("test");
         cns = new ConceptNetworkState(cn);
         node1 = cn.addNode("Node 1");
         node2 = cn.addNode("sNode 2");
@@ -185,14 +203,14 @@ describe.skip('ConceptNetworkState', function () {
 
   });
 
-  describe('#setters', function () {
+  describe.skip('#setters', function () {
 
     var cn, cns, node1, node2;
 
     describe('##setActivationValue', function () {
 
       before(function () {
-        cn = new ConceptNetwork();
+        cn = new ConceptNetwork("test");
         cns = new ConceptNetworkState(cn);
         node1 = cn.addNode("Node 1");
         node2 = cn.addNode("Node 2");
@@ -211,11 +229,11 @@ describe.skip('ConceptNetworkState', function () {
     });
   });
 
-  describe('#propagate', function () {
+  describe.skip('#propagate', function () {
 
     var cn, cns, node1, node2;
     before(function () {
-      cn = new ConceptNetwork();
+      cn = new ConceptNetwork("test");
       cns = new ConceptNetworkState(cn);
       node1 = cn.addNode("Node 1");
       node2 = cn.addNode("Node 2");
