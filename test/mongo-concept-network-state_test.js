@@ -110,32 +110,57 @@ describe('ConceptNetworkState', function () {
       });
     });
 
-    describe.skip('##getMaximumActivationValue', function () {
+    describe('##getMaximumActivationValue', function () {
 
-      before(function () {
+      before(function (done) {
         cn = new ConceptNetwork("test");
         cns = new ConceptNetworkState(cn);
-        node1 = cn.addNode("Node 1");
-        node2 = cn.addNode("sNode 2");
-        node3 = cn.addNode("tNode 3");
+        cn.db.conceptnetwork.remove()
+        .then(function () {
+          cn.addNode("Node 1", function (node) {
+            node1 = node;
+            cn.addNode("sNode 2", function (node) {
+              node2 = node;
+              cn.addNode("tNode 3", function (node) {
+                node3 = node;
+                done();
+              });
+            });
+          });
+        });
       });
 
-      it('should return 0 when no node is activated', function () {
-        assert.equal(cns.getMaximumActivationValue(), 0);
+      it('should return 0 when no node is activated', function (done) {
+        cns.getMaximumActivationValue(function (maximumActivationValue) {
+          assert.equal(maximumActivationValue, 0);
+          done();
+        });
       });
 
-      it('should get the maximum activation value for any token', function () {
-        cns.setActivationValue(node1.id, 75);
-        cns.setActivationValue(node2.id, 70);
-        cns.setActivationValue(node3.id, 50);
-        assert.equal(cns.getMaximumActivationValue(), 75);
+      it.only('should get the maximum activation value for any token', function (done) {
+        cns.setActivationValue(node1._id, 75, function () {
+          cns.setActivationValue(node2._id, 70, function () {
+            cns.setActivationValue(node3._id, 50, function () {
+              cns.getMaximumActivationValue(function (maximumActivationValue) {
+                assert.equal(maximumActivationValue, 75);
+                done();
+              });
+            });
+          });
+        });
       });
 
-      it('should get the maximum activation value for t tokens', function () {
-        cns.setActivationValue(node1.id, 75);
-        cns.setActivationValue(node2.id, 70);
-        cns.setActivationValue(node3.id, 50);
-        assert.equal(cns.getMaximumActivationValue('s'), 70);
+      it('should get the maximum activation value for t tokens', function (done) {
+        cns.setActivationValue(node1._id, 75, function () {
+          cns.setActivationValue(node2._id, 70, function () {
+            cns.setActivationValue(node3._id, 50, function () {
+              cns.getMaximumActivationValue('s', function (maximumActivationValue) {
+                assert.equal(maximumActivationValue, 70);
+                done();
+              });
+            });
+          });
+        });
       });
     });
 
@@ -247,13 +272,23 @@ describe('ConceptNetworkState', function () {
 
   describe.skip('#propagate', function () {
 
-    var cn, cns, node1, node2;
-    before(function () {
+    var cn, cns, node1, node2, link12;
+    before(function (done) {
       cn = new ConceptNetwork("test");
       cns = new ConceptNetworkState(cn);
-      node1 = cn.addNode("Node 1");
-      node2 = cn.addNode("Node 2");
-      cn.addLink(node1.id, node2.id);
+      cn.db.conceptnetwork.remove()
+      .then(function () {
+        cn.addNode("Node 1", function (node) {
+          node1 = node;
+          cn.addNode("Node 2", function (node) {
+            node2 = node;
+            cn.addLink(node1._id, node2._id, function (link) {
+              link12 = link;
+              done();
+            });
+          });
+        });
+      });
     });
 
     it('should deactivate node without afferent links', function () {
