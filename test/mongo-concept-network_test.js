@@ -103,7 +103,11 @@ describe('ConceptNetwork', function () {
         });
       });
     });
-
+    
+    it('should remove the links from the removed node');
+    
+    it('should remove the links to the removed node');
+    
   });
 
   describe("#addLink", function () {
