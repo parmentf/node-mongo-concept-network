@@ -278,7 +278,7 @@ describe('ConceptNetworkState', function () {
     });
   });
 
-  describe.skip('#propagate', function () {
+  describe('#propagate', function () {
 
     var cn, cns, node1, node2, link12;
     before(function (done) {
@@ -299,15 +299,24 @@ describe('ConceptNetworkState', function () {
       });
     });
 
-    it('should deactivate node without afferent links', function () {
-      cns.activate(node1.id);
-      assert.equal(cns.getActivationValue(node1.id), 100);
-      cns.propagate();
-      assert.equal(cns.getActivationValue(node1.id) < 100, true);
+    it('should deactivate node without afferent links', function (done) {
+      cns.activate(node1._id, function (node) {
+        cns.getActivationValue(node1._id, function (activationValue) {
+          assert.equal(activationValue, 100);
+          cns.propagate(function () {
+            cns.getActivationValue(node1._id, function (activationValue) {
+              assert.equal(activationValue < 100, true);
+              done();
+            });
+          });
+        });
+      });
     });
 
     it('should activate node 2', function () {
-      assert.equal(cns.getActivationValue(node2.id) > 0, true);
+      cns.getActivationValue(node2._id, function (activationValue) {
+        assert.equal(activationValue > 0, true);
+      });
     });
 
   });
