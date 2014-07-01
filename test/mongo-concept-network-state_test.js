@@ -164,54 +164,72 @@ describe('ConceptNetworkState', function () {
       });
     });
 
-    describe.skip('##getActivatedTypedNodes', function () {
+    describe('##getActivatedTypedNodes', function () {
 
-      before(function () {
+      before(function (done) {
         cn = new ConceptNetwork("test");
         cns = new ConceptNetworkState(cn);
-        node1 = cn.addNode("Node 1");
-        node2 = cn.addNode("sNode 2");
-        node3 = cn.addNode("tNode 3");
+        cn.db.conceptnetwork.remove()
+        .then(function () {
+          cn.addNode("Node 1", function (node) {
+            node1 = node;
+            cn.addNode("sNode 2", function (node) {
+              node2 = node;
+              cn.addNode("tNode 3", function (node) {
+                node3 = node;
+                done();
+              });
+            });
+          });
+        });
       });
 
       it('should return an empty array', function () {
-        assert.deepEqual(cns.getActivatedTypedNodes(), []);
+        cns.getActivatedTypedNodes(function (activatedNodes) {
+          assert.deepEqual(activatedNodes, []);
+        });
       });
 
       it('should return one-node-array', function () {
-        cns.setActivationValue(node1.id, 100);
-        var result = cns.getActivatedTypedNodes();
-        assert.deepEqual(result,
-          [{"node": {"id": 1, "label": "Node 1", "occ": 1},
-            "activationValue": 100}]);
+        cns.setActivationValue(node1._id, 100, function () {
+          cns.getActivatedTypedNodes(function (result) {
+            assert.deepEqual(result,
+              [{"node": {"id": node1._id, "label": "Node 1", "occ": 1},
+                "activationValue": 100}]);
+          });
+        });
       });
 
       it('should return two-nodes-array', function () {
-        cns.setActivationValue(node2.id, 95);
-        var result = cns.getActivatedTypedNodes();
-        assert.deepEqual(result,
-          [{"node": {"id": 1, "label": "Node 1", "occ": 1},
-            "activationValue": 100},
-           {"node": {"id": 2, "label": "sNode 2", "occ": 1},
-            "activationValue": 95}
-          ]);
+        cns.setActivationValue(node2._id, 95, function () {
+          cns.getActivatedTypedNodes(function (result) {
+            assert.deepEqual(result,
+              [
+                {"node": {"id": node1._id, "label": "Node 1", "occ": 1},
+                 "activationValue": 100},
+                {"node": {"id": node2._id, "label": "sNode 2", "occ": 1},
+                 "activationValue": 95}
+              ]);
+          });
+        });
       });
 
       it('should return one-node-array of type s', function () {
-        cns.setActivationValue(node2.id, 95);
-        var result = cns.getActivatedTypedNodes('s');
-        assert.deepEqual(result,
-          [{"node": {"id": 2, "label": "sNode 2", "occ": 1},
-            "activationValue": 95}
-          ]);
+        cns.getActivatedTypedNodes("s", function (result) {
+          assert.deepEqual(result,
+            [
+              {"node": {"id": node2._id, "label": "sNode 2", "occ": 1},
+               "activationValue": 95}
+            ]);
+        });
       });
 
       it('should return one-node-array where threshold = 96', function () {
-        cns.setActivationValue(node1.id, 100);
-        var result = cns.getActivatedTypedNodes('', 96);
-        assert.deepEqual(result,
-          [{"node": {"id": 1, "label": "Node 1", "occ": 1},
-            "activationValue": 100}]);
+        cns.getActivatedTypedNodes('', 96, function (result) {
+          assert.deepEqual(result,
+            [{"node": {"id": node1._id, "label": "Node 1", "occ": 1},
+              "activationValue": 100}]);
+        });
       });
 
     });
