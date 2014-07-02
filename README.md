@@ -13,14 +13,21 @@ var ConceptNetwork = require('mongo-concept-network').ConceptNetwork;
 var ConceptNetworkState = require('mongo-concept-network').ConceptNetworkState;
 var cn = new ConceptNetwork();
 var cns = new ConceptNetworkState(cn);
-var node1 = cn.addNode("ECTOR");
-var node2 = cn.addNode("knows");
-var node3 = cn.addNode("Achille");
-cn.addLink(node1.id, node2.id);
-cn.addLink(node2.id, node3.id);
-cns.activate(node1.id);
-cns.propagate();
-```
+cn.addNode("ECTOR", function (node1) {
+  cn.addNode("knows", function (node2) {
+    cn.addNode("Achille", function (node3) {
+      cn.addLink(node1._id, node2._id, function(link1_2) {
+        cn.addLink(node2._id, node3._id, function(link2_3) {
+          cns.activate(node1._id, function(nodeState) {
+            cns.propagate(function() {
+              console.log('End');
+            });
+          }
+        }
+      }
+    }
+  }
+}```
 
 ## Documentation
 
