@@ -90,23 +90,36 @@ describe('ConceptNetworkState', function () {
       });
     });
 
-    describe.skip('##getOldActivationValue', function () {
+    describe('##getOldActivationValue', function () {
 
-      before(function () {
+      before(function (done) {
         cn = new ConceptNetwork("test");
         cns = new ConceptNetworkState(cn);
-        node1 = cn.addNode("Node 1");
-        node2 = cn.addNode("Node 2");
-        cns.activate(node1.id);
-        cns.propagate();
+        cn.addNode("Node 1", function (node) {
+          node1 = node;
+          cn.addNode("Node 2", function (node) {
+            node2 = node;
+            cns.activate(node1._id, function (nodeState) {
+              cns.propagate(function () { done(); });
+            });
+          });
+        });
+        
       });
 
-      it('should get a zero activation value', function () {
-        assert.deepEqual(cns.getOldActivationValue(node2.id), 0);
+      it('should get a zero activation value', function (done) {
+        cns.getOldActivationValue(node2._id, function (activationValue) {
+          assert.equal(activationValue, 0);
+          done();
+        });
       });
 
-      it('should get a 100 activation value', function () {
-        assert.deepEqual(cns.getOldActivationValue(node1.id), 100);
+      it('should get a 100 activation value', function (done) {
+        cns.getActivationValue(node1._id, function (activationValue) {
+          assert.equal(activationValue, 100);
+          done();
+        });
+        //assert.deepEqual(cns.getOldActivationValue(node1.id), 100);
       });
     });
 
@@ -305,7 +318,8 @@ describe('ConceptNetworkState', function () {
           assert.equal(activationValue, 100);
           cns.propagate(function () {
             cns.getActivationValue(node1._id, function (activationValue) {
-              assert.equal(activationValue < 100, true);
+              assert(activationValue < 100, 
+                    "activationValue should be less than 100");
               done();
             });
           });
@@ -313,9 +327,11 @@ describe('ConceptNetworkState', function () {
       });
     });
 
-    it('should activate node 2', function () {
+    it('should activate node 2', function (done) {
       cns.getActivationValue(node2._id, function (activationValue) {
-        assert.equal(activationValue > 0, true);
+        assert.ok(activationValue > 0, 
+                  "activationValue should be strictly positive");
+        done();
       });
     });
 
